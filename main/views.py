@@ -2,23 +2,17 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.shortcuts import get_object_or_404
 from django.http.response import HttpResponseRedirect
-# from django.contrib import messages
-# from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
-# from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.conf import settings
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
+from django.core.cache import cache
 
-from .models import ItemModel, TagModel # , Profile
-# from .models import SellerModel
-# from .forms import UserForm, ProfileForm
+from .models import ItemModel, TagModel
 from .forms import SendMessage
-
-# from py_dev_user.utilities import send
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
@@ -41,8 +35,17 @@ class ItemListView(ListView):
             return ItemModel.objects.filter(published=1)
 
 
+# @method_decorator(cache_page(CACHE_TTL), name='dispatch')
 class ItemDetailView(DetailView):
     model = ItemModel
+
+    def get_context_data(self, **kwargs):
+        context = super(ItemDetailView, self).get_context_data(**kwargs)
+        amount_views = cache.get_or_set(key='amount_views', default=0, timeout=60)
+        cache.set(key='amount_views', value=amount_views+1, timeout=60)
+        context['amount_views'] = amount_views+1
+
+        return context
 
 
 # class UserProfileView(DetailView):
