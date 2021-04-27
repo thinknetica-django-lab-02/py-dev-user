@@ -1,5 +1,6 @@
 <!doctype html>
 
+{% load cache %}
 {% load static %}
 
 <html lang="en">
@@ -25,6 +26,7 @@
             {% include 'include/paginator.html' %}
         {% endif %}
     {% endblock %}
+    {% cache 300 footer %}
     <footer class="pt-4 my-md-5 pt-md-5 border-top">
         <div class="row">
             <div class="col-12 col-md">
@@ -62,6 +64,7 @@
             </div>
         </div>
     </footer>
+    {% endcache %}
 </div>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
