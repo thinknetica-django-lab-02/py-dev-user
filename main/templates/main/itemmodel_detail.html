@@ -8,6 +8,7 @@
 
 {% block content %}
     <h2>{{ itemmodel.short_name }}</h2>
+    <h4 class="h6">Amount views: {{ amount_views }}</h4>
     <img class="" src="{% thumbnail itemmodel.image 'preview' %}">
     <div class="d-grid gap-2 d-md-block mt-3">
         <a class="btn btn-primary"  href="{% url 'item_list' %}">Back to list</a>
