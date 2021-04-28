@@ -29,10 +29,10 @@ items = ItemModel.objects.all().filter(category=cat, price__lte=25)
 >>> currency = CurrencyModel.objects.get(short_name='грн.')
 >>> currency
 <CurrencyModel: грн.>
->>> category = CategoryModel.objects.get(name='Спортивные носки, гетры')
->>> category
+>>> cat = CategoryModel.objects.get(name='Спортивные носки, гетры')
+>>> cat
 <CategoryModel: Спортивные носки, гетры>
->>> item = ItemModel.objects.create(short_name='Some good', category=category, seller=seller, currency=currency, price=150)
+>>> item = ItemModel.objects.create(short_name='Some good', category=cat, seller=seller, currency=currency, price=150)
 >>> item
 <ItemModel: Some good>
 >>> item.save()
@@ -45,14 +45,14 @@ items = ItemModel.objects.all().filter(category=cat, price__lte=25)
 >>> item.save()
 >>> item.pk
 11
->>> 
->>> 
+>>>
+>>>
 >>> i = ItemModel.objects.all().filter(price__gte=149, price__lte=152)
 >>> i
 <QuerySet [<ItemModel: Some good>, <ItemModel: One more item>]>
 >>> i.query.__str__()
-'SELECT "main_itemmodel"."id", "main_itemmodel"."short_name", "main_itemmodel"."description", "main_itemmodel"."image", 
-"main_itemmodel"."seller_id", "main_itemmodel"."category_id", "main_itemmodel"."price", "main_itemmodel"."currency_id", 
-"main_itemmodel"."published", "main_itemmodel"."item_create", "main_itemmodel"."item_update" FROM "main_itemmodel" 
+'SELECT "main_itemmodel"."id", "main_itemmodel"."short_name", "main_itemmodel"."description", "main_itemmodel"."image",
+"main_itemmodel"."seller_id", "main_itemmodel"."category_id", "main_itemmodel"."price", "main_itemmodel"."currency_id",
+"main_itemmodel"."published", "main_itemmodel"."item_create", "main_itemmodel"."item_update" FROM "main_itemmodel"
 WHERE ("main_itemmodel"."price" >= 149.0 AND "main_itemmodel"."price" <= 152.0)'
 '''

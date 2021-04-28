@@ -2,8 +2,6 @@ from django.contrib import admin
 from django.contrib.flatpages.admin import FlatPageAdmin
 from django.contrib.flatpages.models import FlatPage
 from django.db import models
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
 
 from .models import ItemModel
 from .models import AdditionalImage

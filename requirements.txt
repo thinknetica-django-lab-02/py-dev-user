@@ -22,14 +22,18 @@ django-js-asset==1.2.2
 django-mptt==0.12.0
 django-redis==4.12.1
 easy-thumbnails==2.7.1
+flake8==3.9.1
 gunicorn==20.1.0
 idna==2.10
 kombu==5.0.2
+mccabe==0.6.1
 oauthlib==3.1.0
 Pillow @ file:///Users/nikolay/PycharmProjects/py-dev-user/Pillow-8.0.1-cp38-cp38-macosx_11_0_arm64.whl
 prompt-toolkit==3.0.18
 psycopg2==2.8.6
+pycodestyle==2.7.0
 pycparser==2.20
+pyflakes==2.3.1
 PyJWT==2.0.1
 python-dateutil==2.8.1
 python3-openid==3.2.0

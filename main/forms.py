@@ -1,17 +1,8 @@
 from django import forms
-# from django.contrib.auth.models import User
-# from django.core.exceptions import ValidationError
-# from django.utils.translation import ugettext_lazy as _
-#
-# from datetime import datetime
-# from dateutil.relativedelta import relativedelta
 
 from ckeditor.widgets import CKEditorWidget
 
 from .tasks import send_circular_message
-
-# from .models import Profile
-
 
 # class UserForm(forms.ModelForm):
 #     class Meta:

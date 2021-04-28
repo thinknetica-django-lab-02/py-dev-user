@@ -31,11 +31,10 @@ class ItemListView(ListView):
         try:
             tag = get_object_or_404(TagModel, tag=self.kwargs['tag_name'])
             return ItemModel.objects.filter(tag=tag.id, published=1)
-        except KeyError as ex:
+        except KeyError:
             return ItemModel.objects.filter(published=1)
 
 
-# @method_decorator(cache_page(CACHE_TTL), name='dispatch')
 class ItemDetailView(DetailView):
     model = ItemModel
 
