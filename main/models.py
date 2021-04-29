@@ -1,3 +1,9 @@
+"""Models
+
+Contain classes describe DB models.
+"""
+
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -11,6 +17,15 @@ from py_dev_user.utilities import get_timestamp_path
 
 
 class CategoryModel(MPTTModel):
+    """Category model
+
+    :param name: category name
+    :type name: str
+    :param parent: parent category
+    :type parent: int
+    :param published: publish category or no
+    :type published: bool, defaults to True
+    """
     name = models.CharField(max_length=100, verbose_name='Name')
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children',
                             verbose_name='Parent category')
@@ -24,6 +39,13 @@ class CategoryModel(MPTTModel):
 
 
 class TagModel(models.Model):
+    """Tag model
+
+    :param tag: tag name
+    :type tag: str
+    :param published: published tag or no
+    :type published: bool, defaults to True
+    """
     tag = models.CharField(max_length=50, verbose_name='Tag')
     published = models.BooleanField(verbose_name='Published', default=True)
 
@@ -35,6 +57,13 @@ class TagModel(models.Model):
 
 
 class CurrencyModel(models.Model):
+    """Currency model
+
+    :param full_name: full name of currency
+    :type full_name: str
+    :param short_name: short name of currency
+    :type short_name: str
+    """
     full_name = models.CharField(max_length=25, verbose_name='Полное имя')
     short_name = models.CharField(max_length=5, verbose_name='Короткое имя')
 
@@ -46,6 +75,12 @@ class CurrencyModel(models.Model):
 
 
 class SellerModel(User):
+    """Seller model
+
+    Model extend the User model.
+    :param phone: phone number
+    :type phone: str
+    """
     phone = models.CharField(max_length=25, verbose_name='Phone', null=True, blank=True)
 
     class Meta:
@@ -53,6 +88,34 @@ class SellerModel(User):
 
 
 class ItemModel(models.Model):
+    """Item model
+
+    Discribe of some Item.
+    :param short_name: item name
+    :type short_name: str
+    :param description: item description
+    :type description: RichText object
+    :param image: avatar
+    :type image: Image object
+    :param tag: Tag
+    :type tag: Tag model object
+    :param seller: Seller
+    :type seller: Seller model object
+    :param category: Category
+    :type category: Category model object
+    :param price: item price
+    :type price: float
+    :param currency: Currency
+    :type currency: Currency model object
+    :param published: published item or no
+    :type published: bool, defaults to True
+    :param in_stock: item present n stock or no
+    :type in_stock: bool, defaults to True
+    :param item_create: when item was created
+    :type item_create: datetime, defaults on auto add now
+    :param item_update: when item was updated
+    :type item_update: datetime, defaults on auto now
+    """
     short_name = models.CharField(max_length=100, verbose_name='Object name', db_index=True)
     description = RichTextField()
     image = models.ImageField(verbose_name='Image', blank=True, null=True, upload_to=get_timestamp_path)
@@ -84,6 +147,13 @@ class ItemModel(models.Model):
 
 
 class AdditionalImage(models.Model):
+    """Additional images model
+
+    :param item: Item
+    :type item: Item model object
+    :param image: additional image of item
+    :type image: Image
+    """
     item = models.ForeignKey(ItemModel, on_delete=models.CASCADE, verbose_name='Item')
     image = models.ImageField(upload_to=get_timestamp_path, verbose_name='Image')
 
@@ -96,6 +166,11 @@ class AdditionalImage(models.Model):
 
 
 class Subscriber(models.Model):
+    """Subscriber model
+
+    :param user: subscriber
+    :type user: ref to User model
+    """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -103,6 +178,13 @@ class Subscriber(models.Model):
 
 
 class ItemReports(models.Model):
+    """Item report model
+
+    :param item: Item
+    :type item: Item model object
+    :param is_send: flag - information was sent or no
+    :type is_send: bool, defaults on False
+    """
     item = models.OneToOneField(ItemModel, on_delete=models.CASCADE)
     is_send = models.BooleanField(default=False)
 
@@ -115,6 +197,17 @@ class ItemReports(models.Model):
 
 
 class SMSLog(models.Model):
+    """SMS log model
+
+    :paran user: User
+    :type user: ref on User model
+    :param message: message
+    :type message: str
+    :param response: response
+    :type response: str
+    :param log_created: when record was created
+    :type log_created: datetime, defaults on auto add now
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.CharField(max_length=2048)
     response = models.CharField(max_length=10)
@@ -145,6 +238,14 @@ class SMSLog(models.Model):
 
 @receiver(post_save, sender=ItemModel)
 def create_item_dispatcher(sender, **kwargs):
+    """Executor of POST_SAVE signal
+
+    :param sender: sender
+    :type sender: some object
+    :param kwargs: keyword arguments
+    :type kwargs: dict
+    :return: None
+    """
     item = kwargs['instance']
     item_reports = ItemReports()
     item_reports.item = item

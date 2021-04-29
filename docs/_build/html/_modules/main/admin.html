@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>main.admin &#8212; PyDev 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for main.admin</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">django.contrib.flatpages.admin</span> <span class="kn">import</span> <span class="n">FlatPageAdmin</span>
+<span class="kn">from</span> <span class="nn">django.contrib.flatpages.models</span> <span class="kn">import</span> <span class="n">FlatPage</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">ItemModel</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">AdditionalImage</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">CategoryModel</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">TagModel</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">SellerModel</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">CurrencyModel</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Subscriber</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">ItemReports</span>
+
+<span class="kn">from</span> <span class="nn">ckeditor.widgets</span> <span class="kn">import</span> <span class="n">CKEditorWidget</span>
+
+
+<div class="viewcode-block" id="FlatPageCustom"><a class="viewcode-back" href="../../main.html#main.admin.FlatPageCustom">[docs]</a><span class="k">class</span> <span class="nc">FlatPageCustom</span><span class="p">(</span><span class="n">FlatPageAdmin</span><span class="p">):</span>
+    <span class="n">formfield_overrides</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;widget&#39;</span><span class="p">:</span> <span class="n">CKEditorWidget</span><span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;template_name&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SellerAdmin"><a class="viewcode-back" href="../../main.html#main.admin.SellerAdmin">[docs]</a><span class="k">class</span> <span class="nc">SellerAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="s1">&#39;is_active&#39;</span><span class="p">,</span> <span class="s1">&#39;date_joined&#39;</span><span class="p">)</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">,),</span>
+        <span class="p">(</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;phone&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;is_active&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;last_login&#39;</span><span class="p">,</span> <span class="s1">&#39;date_joined&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">readonly_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;last_login&#39;</span><span class="p">,</span> <span class="s1">&#39;date_joined&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CurrencyAdmin"><a class="viewcode-back" href="../../main.html#main.admin.CurrencyAdmin">[docs]</a><span class="k">class</span> <span class="nc">CurrencyAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;full_name&#39;</span><span class="p">,</span> <span class="s1">&#39;short_name&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ExtraImagesAdmin"><a class="viewcode-back" href="../../main.html#main.admin.ExtraImagesAdmin">[docs]</a><span class="k">class</span> <span class="nc">ExtraImagesAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;image&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ExtraImagesInline"><a class="viewcode-back" href="../../main.html#main.admin.ExtraImagesInline">[docs]</a><span class="k">class</span> <span class="nc">ExtraImagesInline</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">TabularInline</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">AdditionalImage</span>
+    <span class="n">extra</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="ItemAdmin"><a class="viewcode-back" href="../../main.html#main.admin.ItemAdmin">[docs]</a><span class="k">class</span> <span class="nc">ItemAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;short_name&#39;</span><span class="p">,</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="s1">&#39;currency&#39;</span><span class="p">,</span> <span class="s1">&#39;seller&#39;</span><span class="p">,</span> <span class="s1">&#39;published&#39;</span><span class="p">,</span> <span class="s1">&#39;item_create&#39;</span><span class="p">,</span> <span class="s1">&#39;item_update&#39;</span><span class="p">)</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;short_name&#39;</span><span class="p">,</span> <span class="s1">&#39;seller&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;description&#39;</span><span class="p">,</span>
+        <span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="s1">&#39;published&#39;</span><span class="p">,</span> <span class="s1">&#39;in_stock&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="s1">&#39;currency&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;tag&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;image&#39;</span>
+    <span class="p">)</span>
+
+    <span class="n">inlines</span> <span class="o">=</span> <span class="p">(</span><span class="n">ExtraImagesInline</span><span class="p">,)</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;activate_item&#39;</span><span class="p">,</span> <span class="s1">&#39;deactivate_item&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="ItemAdmin.activate_item"><a class="viewcode-back" href="../../main.html#main.admin.ItemAdmin.activate_item">[docs]</a>    <span class="k">def</span> <span class="nf">activate_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">queryset</span><span class="p">):</span>
+        <span class="n">row_update</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">published</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">row_update</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">message_bit</span> <span class="o">=</span> <span class="s1">&#39;One item was updated&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message_bit</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">row_update</span><span class="si">}</span><span class="s1"> items were updated&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">message_bit</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ItemAdmin.deactivate_item"><a class="viewcode-back" href="../../main.html#main.admin.ItemAdmin.deactivate_item">[docs]</a>    <span class="k">def</span> <span class="nf">deactivate_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">queryset</span><span class="p">):</span>
+        <span class="n">row_update</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">published</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">row_update</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">message_bit</span> <span class="o">=</span> <span class="s1">&#39;One item was updated&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message_bit</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">row_update</span><span class="si">}</span><span class="s1"> items were updated&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">message_bit</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+    <span class="n">activate_item</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">&#39;Activate&#39;</span>
+    <span class="n">activate_item</span><span class="o">.</span><span class="n">allowed_permission</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">,)</span>
+
+    <span class="n">deactivate_item</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">&#39;Deactivate&#39;</span>
+    <span class="n">deactivate_item</span><span class="o">.</span><span class="n">allowed_permission</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">,)</span></div>
+
+
+<div class="viewcode-block" id="CategoryAdmin"><a class="viewcode-back" href="../../main.html#main.admin.CategoryAdmin">[docs]</a><span class="k">class</span> <span class="nc">CategoryAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;parent&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ItemReportsAdmin"><a class="viewcode-back" href="../../main.html#main.admin.ItemReportsAdmin">[docs]</a><span class="k">class</span> <span class="nc">ItemReportsAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;item&#39;</span><span class="p">,</span> <span class="s1">&#39;is_send&#39;</span><span class="p">)</span></div>
+
+
+<span class="c1"># class UserProfileInline(admin.TabularInline):</span>
+<span class="c1">#     model = Profile</span>
+<span class="c1">#     fields = (&#39;avatar&#39;, &#39;date_of_birth&#39;,)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># class UserAdminCustom(UserAdmin):</span>
+<span class="c1">#     list_display = (&#39;username&#39;, &#39;first_name&#39;, &#39;last_name&#39;, &#39;is_active&#39;, &#39;is_staff&#39;, &#39;is_superuser&#39;, &#39;date_joined&#39;)</span>
+<span class="c1">#     list_filter = (&#39;is_staff&#39;, &#39;is_superuser&#39;)</span>
+<span class="c1">#     ordering = (&#39;id&#39;,)</span>
+<span class="c1">#     inlines = (UserProfileInline,)</span>
+<span class="c1">#</span>
+<span class="c1">#     readonly_fields = (&#39;last_login&#39;, &#39;date_joined&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># admin.site.unregister(User)</span>
+<span class="c1"># admin.site.register(User, UserAdminCustom)</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">FlatPage</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">FlatPage</span><span class="p">,</span> <span class="n">FlatPageCustom</span><span class="p">)</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">ItemModel</span><span class="p">,</span> <span class="n">ItemAdmin</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">AdditionalImage</span><span class="p">,</span> <span class="n">ExtraImagesAdmin</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">CategoryModel</span><span class="p">,</span> <span class="n">CategoryAdmin</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">TagModel</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">SellerModel</span><span class="p">,</span> <span class="n">SellerAdmin</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">CurrencyModel</span><span class="p">,</span> <span class="n">CurrencyAdmin</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Subscriber</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">ItemReports</span><span class="p">,</span> <span class="n">ItemReportsAdmin</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">PyDev</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, User.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
