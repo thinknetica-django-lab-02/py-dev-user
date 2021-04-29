@@ -1,7 +1,8 @@
+from django.http import HttpRequest
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.shortcuts import get_object_or_404
-from django.http.response import HttpResponseRedirect
+from django.http.response import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -17,7 +18,7 @@ from .forms import SendMessage
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 
-def index(request):
+def index(request: HttpRequest) -> HttpResponse:
     turn_on_block = True
     return render(request, 'main/index.html', {'turn_on_block': turn_on_block})
 
@@ -27,7 +28,7 @@ class ItemListView(ListView):
     model = ItemModel
     paginate_by = 5
 
-    def get_queryset(self):
+    def get_queryset(self) -> ItemModel:
         try:
             tag = get_object_or_404(TagModel, tag=self.kwargs['tag_name'])
             return ItemModel.objects.filter(tag=tag.id, published=1)
@@ -38,7 +39,7 @@ class ItemListView(ListView):
 class ItemDetailView(DetailView):
     model = ItemModel
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: dict) -> dict:
         context = super(ItemDetailView, self).get_context_data(**kwargs)
         amount_views = cache.get_or_set(key='amount_views', default=0, timeout=60)
         cache.set(key='amount_views', value=amount_views+1, timeout=60)
@@ -89,7 +90,7 @@ class ItemDeleteView(PermissionRequiredMixin, DeleteView):
 
 
 @login_required
-def send_message_to_email(request):
+def send_message_to_email(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         form = SendMessage(request.POST)
         if form.is_valid():

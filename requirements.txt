@@ -23,6 +23,8 @@ django-debug-toolbar==3.2.1
 django-js-asset==1.2.2
 django-mptt==0.12.0
 django-redis==4.12.1
+django-stubs==1.8.0
+django-stubs-ext==0.2.0
 docutils==0.16
 easy-thumbnails==2.7.1
 flake8==3.9.1
@@ -33,6 +35,8 @@ Jinja2==2.11.3
 kombu==5.0.2
 MarkupSafe==1.1.1
 mccabe==0.6.1
+mypy==0.812
+mypy-extensions==0.4.3
 oauthlib==3.1.0
 packaging==20.9
 Pillow @ file:///Users/nikolay/PycharmProjects/py-dev-user/Pillow-8.0.1-cp38-cp38-macosx_11_0_arm64.whl
@@ -61,6 +65,8 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.4
 sqlparse==0.4.1
 twilio==6.57.0
+typed-ast==1.4.3
+typing-extensions==3.7.4.3
 tzlocal==2.1
 urllib3==1.26.4
 vine==5.0.0
