@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>main.models &#8212; PyDev 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for main.models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Models</span>
+
+<span class="sd">Contain classes describe DB models.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.dispatch</span> <span class="kn">import</span> <span class="n">receiver</span>
+<span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="kn">import</span> <span class="n">post_save</span>
+
+<span class="kn">from</span> <span class="nn">mptt.models</span> <span class="kn">import</span> <span class="n">MPTTModel</span><span class="p">,</span> <span class="n">TreeForeignKey</span>
+<span class="kn">from</span> <span class="nn">ckeditor.fields</span> <span class="kn">import</span> <span class="n">RichTextField</span>
+
+<span class="kn">from</span> <span class="nn">py_dev_user.utilities</span> <span class="kn">import</span> <span class="n">get_timestamp_path</span>
+
+
+<div class="viewcode-block" id="CategoryModel"><a class="viewcode-back" href="../../main.html#main.admin.CategoryModel">[docs]</a><span class="k">class</span> <span class="nc">CategoryModel</span><span class="p">(</span><span class="n">MPTTModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Category model</span>
+
+<span class="sd">    :param name: category name</span>
+<span class="sd">    :type name: str</span>
+<span class="sd">    :param parent: parent category</span>
+<span class="sd">    :type parent: int</span>
+<span class="sd">    :param published: publish category or no</span>
+<span class="sd">    :type published: bool, defaults to True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Name&#39;</span><span class="p">)</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">TreeForeignKey</span><span class="p">(</span><span class="s1">&#39;self&#39;</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">,</span>
+                            <span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Parent category&#39;</span><span class="p">)</span>
+    <span class="n">published</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Published&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s1">&#39;Category&#39;</span></div>
+
+
+<div class="viewcode-block" id="TagModel"><a class="viewcode-back" href="../../main.html#main.admin.TagModel">[docs]</a><span class="k">class</span> <span class="nc">TagModel</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tag model</span>
+
+<span class="sd">    :param tag: tag name</span>
+<span class="sd">    :type tag: str</span>
+<span class="sd">    :param published: published tag or no</span>
+<span class="sd">    :type published: bool, defaults to True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Tag&#39;</span><span class="p">)</span>
+    <span class="n">published</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Published&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s1">&#39;Tag&#39;</span></div>
+
+
+<div class="viewcode-block" id="CurrencyModel"><a class="viewcode-back" href="../../main.html#main.admin.CurrencyModel">[docs]</a><span class="k">class</span> <span class="nc">CurrencyModel</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Currency model</span>
+
+<span class="sd">    :param full_name: full name of currency</span>
+<span class="sd">    :type full_name: str</span>
+<span class="sd">    :param short_name: short name of currency</span>
+<span class="sd">    :type short_name: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">full_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Полное имя&#39;</span><span class="p">)</span>
+    <span class="n">short_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Короткое имя&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">short_name</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s1">&#39;Currency&#39;</span></div>
+
+
+<div class="viewcode-block" id="SellerModel"><a class="viewcode-back" href="../../main.html#main.admin.SellerModel">[docs]</a><span class="k">class</span> <span class="nc">SellerModel</span><span class="p">(</span><span class="n">User</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Seller model</span>
+
+<span class="sd">    Model extend the User model.</span>
+<span class="sd">    :param phone: phone number</span>
+<span class="sd">    :type phone: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">phone</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Phone&#39;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s1">&#39;Seller&#39;</span></div>
+
+
+<div class="viewcode-block" id="ItemModel"><a class="viewcode-back" href="../../main.html#main.admin.ItemModel">[docs]</a><span class="k">class</span> <span class="nc">ItemModel</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Item model</span>
+
+<span class="sd">    Discribe of some Item.</span>
+<span class="sd">    :param short_name: item name</span>
+<span class="sd">    :type short_name: str</span>
+<span class="sd">    :param description: item description</span>
+<span class="sd">    :type description: RichText object</span>
+<span class="sd">    :param image: avatar</span>
+<span class="sd">    :type image: Image object</span>
+<span class="sd">    :param tag: Tag</span>
+<span class="sd">    :type tag: Tag model object</span>
+<span class="sd">    :param seller: Seller</span>
+<span class="sd">    :type seller: Seller model object</span>
+<span class="sd">    :param category: Category</span>
+<span class="sd">    :type category: Category model object</span>
+<span class="sd">    :param price: item price</span>
+<span class="sd">    :type price: float</span>
+<span class="sd">    :param currency: Currency</span>
+<span class="sd">    :type currency: Currency model object</span>
+<span class="sd">    :param published: published item or no</span>
+<span class="sd">    :type published: bool, defaults to True</span>
+<span class="sd">    :param in_stock: item present n stock or no</span>
+<span class="sd">    :type in_stock: bool, defaults to True</span>
+<span class="sd">    :param item_create: when item was created</span>
+<span class="sd">    :type item_create: datetime, defaults on auto add now</span>
+<span class="sd">    :param item_update: when item was updated</span>
+<span class="sd">    :type item_update: datetime, defaults on auto now</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">short_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Object name&#39;</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">RichTextField</span><span class="p">()</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ImageField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Image&#39;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">upload_to</span><span class="o">=</span><span class="n">get_timestamp_path</span><span class="p">)</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">TagModel</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">seller</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">SellerModel</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">category</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">CategoryModel</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">FloatField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Price&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">currency</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">CurrencyModel</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">published</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Published&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">in_stock</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;In stock&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">item_create</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;created&#39;</span><span class="p">)</span>
+    <span class="n">item_update</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;updated&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">short_name</span>
+
+<div class="viewcode-block" id="ItemModel.delete"><a class="viewcode-back" href="../../main.html#main.admin.ItemModel.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ai</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">additionalimage_set</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">ai</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ItemModel.get_absolute_url"><a class="viewcode-back" href="../../main.html#main.admin.ItemModel.get_absolute_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;item_detail&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)])</span></div>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s1">&#39;Item&#39;</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-item_create&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="AdditionalImage"><a class="viewcode-back" href="../../main.html#main.admin.AdditionalImage">[docs]</a><span class="k">class</span> <span class="nc">AdditionalImage</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Additional images model</span>
+
+<span class="sd">    :param item: Item</span>
+<span class="sd">    :type item: Item model object</span>
+<span class="sd">    :param image: additional image of item</span>
+<span class="sd">    :type image: Image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">item</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ItemModel</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Item&#39;</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ImageField</span><span class="p">(</span><span class="n">upload_to</span><span class="o">=</span><span class="n">get_timestamp_path</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s1">&#39;Image&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s1">&#39;Additional imge&#39;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s1">&#39;Additional images&#39;</span></div>
+
+
+<div class="viewcode-block" id="Subscriber"><a class="viewcode-back" href="../../main.html#main.admin.Subscriber">[docs]</a><span class="k">class</span> <span class="nc">Subscriber</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subscriber model</span>
+
+<span class="sd">    :param user: subscriber</span>
+<span class="sd">    :type user: ref to User model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">OneToOneField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span></div>
+
+
+<div class="viewcode-block" id="ItemReports"><a class="viewcode-back" href="../../main.html#main.admin.ItemReports">[docs]</a><span class="k">class</span> <span class="nc">ItemReports</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Item report model</span>
+
+<span class="sd">    :param item: Item</span>
+<span class="sd">    :type item: Item model object</span>
+<span class="sd">    :param is_send: flag - information was sent or no</span>
+<span class="sd">    :type is_send: bool, defaults on False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">item</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">OneToOneField</span><span class="p">(</span><span class="n">ItemModel</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">is_send</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">short_name</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s1">&#39;Item report&#39;</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-is_send&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SMSLog"><a class="viewcode-back" href="../../main.html#main.admin.SMSLog">[docs]</a><span class="k">class</span> <span class="nc">SMSLog</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;SMS log model</span>
+
+<span class="sd">    :paran user: User</span>
+<span class="sd">    :type user: ref on User model</span>
+<span class="sd">    :param message: message</span>
+<span class="sd">    :type message: str</span>
+<span class="sd">    :param response: response</span>
+<span class="sd">    :type response: str</span>
+<span class="sd">    :param log_created: when record was created</span>
+<span class="sd">    :type log_created: datetime, defaults on auto add now</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">2048</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">log_create</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s1">&#39;SMS Log&#39;</span></div>
+
+<span class="c1"># class Profile(models.Model):</span>
+<span class="c1">#     user = models.OneToOneField(User, on_delete=models.CASCADE)</span>
+<span class="c1">#     avatar = models.ImageField(verbose_name=&#39;Avatar&#39;, blank=True, null=True, upload_to=get_timestamp_path)</span>
+<span class="c1">#     date_of_birth = models.DateField(blank=True, null=True)</span>
+<span class="c1">#</span>
+<span class="c1">#     def __str__(self):</span>
+<span class="c1">#         return &#39;&#39;   # self.user.username</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># @receiver(post_save, sender=User)</span>
+<span class="c1"># def create_user_profile(sender, instance, created, **kwargs):</span>
+<span class="c1">#     if created:</span>
+<span class="c1">#         Profile.objects.create(user=instance)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># @receiver(post_save, sender=User)</span>
+<span class="c1"># def save_user_profile(sender, instance, **kwargs):</span>
+<span class="c1">#     instance.profile.save()</span>
+
+
+<div class="viewcode-block" id="create_item_dispatcher"><a class="viewcode-back" href="../../main.html#main.admin.create_item_dispatcher">[docs]</a><span class="nd">@receiver</span><span class="p">(</span><span class="n">post_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">ItemModel</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">create_item_dispatcher</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Executor of POST_SAVE signal</span>
+
+<span class="sd">    :param sender: sender</span>
+<span class="sd">    :type sender: some object</span>
+<span class="sd">    :param kwargs: keyword arguments</span>
+<span class="sd">    :type kwargs: dict</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">item</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;instance&#39;</span><span class="p">]</span>
+    <span class="n">item_reports</span> <span class="o">=</span> <span class="n">ItemReports</span><span class="p">()</span>
+    <span class="n">item_reports</span><span class="o">.</span><span class="n">item</span> <span class="o">=</span> <span class="n">item</span>
+    <span class="n">item_reports</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">PyDev</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, User.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
