@@ -15,11 +15,11 @@ class ProfileInline(admin.StackedInline):
 
     def avatar_image(self, obj):
         return mark_safe('<img src="{url}" width="{width}"  />'.format(
-            url=obj.avatar.url,
-            width=300,
-            # height=obj.avatar.height,
+                url=obj.avatar.url,
+                width=300,
+                # height=obj.avatar.height,
+            )
         )
-    )
 
     readonly_fields = ["avatar_image"]
 
