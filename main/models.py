@@ -2,7 +2,7 @@
 
 Contain classes describe DB models.
 """
-
+from typing import Optional, Any
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -31,7 +31,7 @@ class CategoryModel(MPTTModel):
                             verbose_name='Parent category')
     published = models.BooleanField(verbose_name='Published', default=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
     class Meta:
@@ -49,7 +49,7 @@ class TagModel(models.Model):
     tag = models.CharField(max_length=50, verbose_name='Tag')
     published = models.BooleanField(verbose_name='Published', default=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.tag
 
     class Meta:
@@ -67,7 +67,7 @@ class CurrencyModel(models.Model):
     full_name = models.CharField(max_length=25, verbose_name='Полное имя')
     short_name = models.CharField(max_length=5, verbose_name='Короткое имя')
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.short_name
 
     class Meta:
@@ -129,16 +129,16 @@ class ItemModel(models.Model):
     item_create = models.DateTimeField(auto_now_add=True, verbose_name='created')
     item_update = models.DateTimeField(auto_now=True, verbose_name='updated')
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.short_name
 
-    def delete(self, *args, **kwargs):
+    def delete(self, *args: tuple, **kwargs: dict) -> None:
         for ai in self.additionalimage_set.all():
             ai.delete()
 
         super().delete(*args, **kwargs)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> Optional[str]:
         return reverse('item_detail', args=[str(self.id)])
 
     class Meta:
@@ -157,7 +157,7 @@ class AdditionalImage(models.Model):
     item = models.ForeignKey(ItemModel, on_delete=models.CASCADE, verbose_name='Item')
     image = models.ImageField(upload_to=get_timestamp_path, verbose_name='Image')
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.image.name
 
     class Meta:
@@ -173,7 +173,7 @@ class Subscriber(models.Model):
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.user.username
 
 
@@ -188,7 +188,7 @@ class ItemReports(models.Model):
     item = models.OneToOneField(ItemModel, on_delete=models.CASCADE)
     is_send = models.BooleanField(default=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.item.short_name
 
     class Meta:
@@ -237,7 +237,7 @@ class SMSLog(models.Model):
 
 
 @receiver(post_save, sender=ItemModel)
-def create_item_dispatcher(sender, **kwargs):
+def create_item_dispatcher(sender: Any, **kwargs: dict) -> None:
     """Executor of POST_SAVE signal
 
     :param sender: sender
