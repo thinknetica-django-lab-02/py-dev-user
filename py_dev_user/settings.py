@@ -111,7 +111,6 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': 5430,
     }
-
 }
 
 # Password validation
